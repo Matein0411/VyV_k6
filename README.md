@@ -146,7 +146,7 @@ k6 run load-test.js
 
 <div align="center">
 
-*(Insertar aquí la captura de resultados obtenida al ejecutar `k6 run load-test.js`)*
+<img width="1116" height="598" alt="image" src="https://github.com/user-attachments/assets/3c76f9ee-75f8-4973-8ebc-2a31126775e1" />
 
 **Figura 3. Resultados de la ejecución de Load Testing**
 
