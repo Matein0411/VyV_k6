@@ -20,7 +20,7 @@
 4. [Instalación del Entorno](#4-instalación-del-entorno)
    - 4.1 [Instalación de k6](#41-instalación-de-k6)
    - 4.2 [Preparación del Proyecto y API Mock](#42-preparación-del-proyecto-y-api-mock)
-5. [Introducción a k6](#5-introducción-a-k6)
+5. [Introducción a k6 y Script Básico](#5-introducción-a-k6-y-script-básico)
 6. [Load Testing](#6-load-testing)
 7. [Stress Testing](#7-stress-testing)
 8. [Spike Testing](#8-spike-testing)
@@ -101,14 +101,41 @@ node server.js
 
 La API mock expone tres endpoints simulados (`/youtube`, `/github`, `/twitter`) con **latencia variable** (50-200 ms) y **degradación progresiva**: a partir de cierto número de peticiones concurrentes, el tiempo de respuesta aumenta, simulando el comportamiento de un servidor real acercándose a su límite de capacidad.
 
-## 5. Introducción a k6
+## 5. Introducción a k6 y Script Básico
 
-k6 permite definir, mediante un script de JavaScript, un patrón de carga (`options.stages`) que indica cuántos **usuarios virtuales (VUs)** deben estar activos en cada momento de la prueba, y una función principal (`export default`) que cada VU ejecuta en bucle — típicamente una o varias peticiones HTTP seguidas de una pausa (`sleep`) que simula el tiempo de uso real de una persona.
+k6 permite definir el comportamiento de las pruebas mediante scripts de JavaScript. Todo script de k6 se compone principalmente de dos partes:
 
-Cada uno de los siguientes cuatro tipos de prueba se diferencia, principalmente, en **cómo se configura el arreglo `stages`**.
+1. **Configuración (`options`):** Define el patrón de carga, como la cantidad de **usuarios virtuales (VUs)** y el tiempo de ejecución (o un arreglo de etapas/`stages` para pruebas más complejas).
+2. **Comportamiento (`export default`):** Es la función que cada usuario virtual ejecuta en bucle. Típicamente incluye peticiones HTTP, **validaciones (`check`)** para asegurar que el servidor responde correctamente, y pausas (`sleep`) que simulan el tiempo de lectura de una persona real.
+
+Para comprobar que el entorno funciona correctamente antes de inyectar cargas masivas, ejecutamos un **Script Básico** (`Basico.js`) que valida que la API mock responde con un código 200 y en menos de 200 milisegundos:
+
+```javascript
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+  vus: 5,          // 5 usuarios virtuales
+  duration: '10s', // duración de 10 segundos
+};
+
+export default function () {
+  let res = http.get('http://localhost:5001/youtube');
+  
+  // Verificación y Validación en tiempo real
+  check(res, {
+    'el estado es 200 (OK)': (r) => r.status === 200,
+    'responde en menos de 200ms': (r) => r.timings.duration < 200,
+  });
+  
+  sleep(1);
+}
+```
+
+A partir de este concepto base, cada uno de los siguientes cuatro tipos de prueba (Load, Stress, Spike y Soak) se diferencia principalmente en **cómo se configura el patrón de carga utilizando el arreglo `stages`** dentro de las opciones.
 
 > [!NOTE]
-> **Sobre los tiempos usados en esta práctica:** por motivos de tiempo de clase, las duraciones de los `stages` en los scripts siguientes se configuraron en **segundos** en lugar de minutos u horas. Esto permite completar la demostración en pocos minutos. **En un entorno real de pruebas, lo recomendable es usar duraciones mucho mayores** (minutos para Load/Stress/Spike, y horas para Soak), ya que se necesita tiempo suficiente para que el sistema estabilice su comportamiento bajo cada nivel de carga antes de sacar conclusiones.
+> **Sobre los tiempos usados en esta práctica:** por motivos de tiempo de clase, las duraciones de las pruebas en los scripts siguientes se configuraron en **segundos** en lugar de minutos u horas. Esto permite completar la demostración en pocos minutos. **En un entorno real de pruebas, lo recomendable es usar duraciones mucho mayores** (minutos para Load/Stress/Spike, y horas para Soak), ya que se necesita tiempo suficiente para que el sistema estabilice su comportamiento bajo cada nivel de carga antes de sacar conclusiones.
 
 ## 6. Load Testing
 
