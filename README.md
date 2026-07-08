@@ -379,7 +379,7 @@ k6 run soak-test.js
 
 <div align="center">
 
-*(Insertar aquí la captura de resultados obtenida al ejecutar `k6 run soak-test.js`)*
+<img width="585" height="698" alt="image" src="https://github.com/user-attachments/assets/359561a4-4752-4f8c-901f-08aee642c544" />
 
 **Figura 6. Resultados de la ejecución de Soak Testing**
 
