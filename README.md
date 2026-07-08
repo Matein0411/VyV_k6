@@ -319,7 +319,8 @@ k6 run spike-test.js
 **Resultado esperado:** El sistema fue sometido a un pico de **1500 usuarios virtuales simultáneos**. El servidor activó sus defensas, elevó su tiempo de respuesta y rechazó una parte de las peticiones con **503 Service Unavailable**. Aun así, no colapsó y recuperó su estado normal al bajar la carga.
 <div align="center">
 
-*(Insertar aquí la captura de resultados obtenida al ejecutar `k6 run spike-test.js`)*
+<img width="947" height="640" alt="image" src="https://github.com/user-attachments/assets/2c9a34ae-c56b-4771-8382-5cb643f5c45d" />
+
 
 **Figura 5. Resultados de la ejecución de Spike Testing**
 
