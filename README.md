@@ -324,7 +324,7 @@ k6 run soak-test.js
 
 </div>
 
-**Resultado esperado:** con una carga moderada de 50 VUs sostenida en el tiempo, la latencia debe mantenerse estable y sin tendencia creciente. Si se observara un aumento progresivo del tiempo de respuesta a lo largo de la ejecución (incluso sin subir el número de VUs), sería un indicio de degradación o fuga de recursos en el sistema.
+**Resultado esperado:** con una carga moderada de 200 VUs sostenida en el tiempo, la latencia debe mantenerse estable y sin tendencia creciente. Si se observara un aumento progresivo del tiempo de respuesta a lo largo de la ejecución (incluso sin subir el número de VUs), sería un indicio de degradación o fuga de recursos en el sistema.
 
 ## 10. Notas y Advertencias Generales
 
