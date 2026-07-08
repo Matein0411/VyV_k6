@@ -225,7 +225,9 @@ k6 run stress-test.js
 
 <div align="center">
 
-*(Insertar aquí la captura de la ejecución en progreso y del resumen final de métricas)*
+<img width="1028" height="782" alt="image" src="https://github.com/user-attachments/assets/99cb4c5d-41ac-41ac-a800-34069f5c11d1" />
+
+<img width="732" height="253" alt="image" src="https://github.com/user-attachments/assets/cee8d3c8-7e20-439c-a1a9-c413832a59f6" />
 
 **Figura 4. Ejecución de la prueba de Stress Testing**
 
