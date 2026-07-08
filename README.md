@@ -118,7 +118,22 @@ Cada uno de los siguientes cuatro tipos de prueba se diferencia, principalmente,
 import http from 'k6/http';
 import { sleep } from 'k6';
 
+export const options = {
+    stages: [
+        { duration: '10s', target: 50 }, // sube progresivamente hasta 50 usuarios
+        { duration: '20s', target: 50 }, // mantiene 50 usuarios como carga normal
+        { duration: '10s', target: 0 },  // baja progresivamente hasta 0 usuarios
+    ],
+    thresholds: {
+        http_req_failed: ['rate<0.05'],      // menos del 5% de errores
+        http_req_duration: ['p(95)<1000'],   // 95% de respuestas deben completarse en menos de 1 segundo
+    },
+};
 
+export default () => {
+    let response = http.get('http://localhost:5001/youtube');
+
+    sleep(1);
 };
 ```
 
@@ -131,7 +146,7 @@ k6 run load-test.js
 
 <div align="center">
 
-*(Insertar aquí la captura de resultados obtenida al ejecutar `k6 run load-test.js`)*
+<img width="1116" height="598" alt="image" src="https://github.com/user-attachments/assets/3c76f9ee-75f8-4973-8ebc-2a31126775e1" />
 
 **Figura 3. Resultados de la ejecución de Load Testing**
 
