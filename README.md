@@ -245,9 +245,34 @@ k6 run stress-test.js
 
 ```javascript
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { sleep, check } from 'k6';
+import { SharedArray } from 'k6/data';
 
+const endpoints = new SharedArray('rutas de la api', function () {
+  return ['/youtube', '/github', '/twitter'];
+});
+
+export const options = {
+  stages: [
+    { duration: '5s', target: 20 },   // 1. Base tranquila (5 segundos)
+    { duration: '5s', target: 1500 },  // 2.Sube a 1500 usuarios en solo 5 segundos
+    { duration: '20s', target: 1500 }, // 3. Mantiene el pico por 20 segundos (Suficiente para colapsar la API)
+    { duration: '5s', target: 20 },   // 4. Bajada drástica en 5 segundos
+    { duration: '10s', target: 0 },   // 5. Enfriamiento final
+  ],
 };
+
+export default function () {
+  const rutaAleatoria = endpoints[Math.floor(Math.random() * endpoints.length)];
+  const respuesta = http.get(`http://localhost:5001${rutaAleatoria}`);
+  
+  check(respuesta, {
+    'Respuesta exitosa (200 OK)': (r) => r.status === 200,
+    'Servidor saturado (503 Unavailable)': (r) => r.status === 503,
+  });
+
+  sleep(1);
+}
 ```
 
 **Ejecución:**
@@ -255,8 +280,43 @@ import { sleep } from 'k6';
 k6 run spike-test.js
 ```
 
-**Resultado esperado:** durante el pico de 500 VUs se debe observar un incremento súbito de latencia y una probable aparición de errores 503 (simulados en la API mock a partir de 300 peticiones concurrentes), seguido de una recuperación una vez la carga desciende a 20 VUs.
 
+###  Sección: TOTAL RESULTS & CHECKS (Validaciones)
+
+| Métrica | Significado |
+|---|---|
+| `checks_total` | Total de validaciones ejecutadas por k6. |
+| `checks_succeeded / failed` | Distribución de aciertos y fallos en las validaciones. |
+| `Respuesta exitosa (200 OK)` | Peticiones atendidas correctamente. |
+| `Servidor saturado (503)` | Peticiones rechazadas por sobrecarga. |
+
+### Sección: HTTP (Rendimiento Web)
+
+| Métrica | Significado |
+|---|---|
+| `http_req_duration` | Tiempo de respuesta del servidor durante la prueba. |
+| `http_req_failed` | Porcentaje de peticiones fallidas, principalmente por 503. |
+| `http_reqs` | Total de peticiones procesadas. |
+
+### Sección: EXECUTION (Mecánica de la Prueba)
+
+| Métrica | Significado |
+|---|---|
+| `iteration_duration` | Tiempo promedio de cada ciclo del script. |
+| `iterations` | Total de ciclos completados. |
+| `vus` | Usuarios virtuales activos al cierre. |
+| `vus_max` | Pico máximo de usuarios virtuales alcanzado. |
+
+### Sección: NETWORK (Tráfico de Datos)
+
+| Métrica | Significado |
+|---|---|
+| `data_received` | Datos recibidos desde el servidor. |
+| `data_sent` | Datos enviados hacia el servidor. |
+
+
+
+**Resultado esperado:** El sistema fue sometido a un pico de **1500 usuarios virtuales simultáneos**. El servidor activó sus defensas, elevó su tiempo de respuesta y rechazó una parte de las peticiones con **503 Service Unavailable**. Aun así, no colapsó y recuperó su estado normal al bajar la carga.
 <div align="center">
 
 *(Insertar aquí la captura de resultados obtenida al ejecutar `k6 run spike-test.js`)*
