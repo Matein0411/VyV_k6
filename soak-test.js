@@ -3,13 +3,13 @@ import { sleep, check } from 'k6';
 import { SharedArray } from 'k6/data';
 
 var hostname = __ENV.HOSTNAME;
-if (hostname == null) hostname = 'localhost:5157';
+if (hostname == null) hostname = 'localhost:5001';
 
 export const options = {
     stages: [
-        { duration: '5m', target: 200 },  // ramp-up (subida en 5 minutos)
-        { duration: '15m', target: 200 }, // stable (mantiene 200 usuarios durante 15 minutos)
-        { duration: '5m', target: 0 },    // ramp-down to 0 users (bajada en 5 minutos)
+        { duration: '5s', target: 200 },  // ramp-up (subida en 5 minutos)
+        { duration: '30s', target: 200 }, // stable (mantiene 200 usuarios durante 15 minutos)
+        { duration: '5s', target: 0 },    // ramp-down to 0 users (bajada en 5 minutos)
     ],
     thresholds: {
         http_req_failed: ['rate<0.01'],    // Menos del 1% de errores
@@ -17,19 +17,18 @@ export const options = {
     },
 };
 
-// Bloque SharedArray con datos de ejemplo
-const dates = new SharedArray('dates', function () {
-    return ['18', '25', '30', '40', '50', '65'];
+const endpoints = new SharedArray('social_endpoints', function () {
+    return ['youtube', 'github', 'twitter'];
 });
 
 export default () => {
-    // Selecciona un parámetro aleatorio del SharedArray
-    const randomDate = dates[Math.floor(Math.random() * dates.length)];
+    // Selecciona una ruta aleatoria: 'youtube', 'github' o 'twitter'
+    const randomEndpoint = endpoints[Math.floor(Math.random() * endpoints.length)];
     
-    // Ejecuta la petición GET parametrizada
-    const res = http.get(`http://${hostname}/age/${randomDate}`);
+    // Ejecuta la petición GET parametrizada a un endpoint que SÍ existe
+    const res = http.get(`http://${hostname}/${randomEndpoint}`);
     
-    // Validación de la respuesta HTTP 200
+    // Validación de la respuesta HTTP 200 OK
     check(res, { '200': (r) => r.status === 200 });
     
     sleep(1);
