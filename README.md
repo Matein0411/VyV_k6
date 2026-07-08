@@ -134,6 +134,10 @@ export default function () {
 
 A partir de este concepto base, cada uno de los siguientes cuatro tipos de prueba (Load, Stress, Spike y Soak) se diferencia principalmente en **cómo se configura el patrón de carga utilizando el arreglo `stages`** dentro de las opciones.
 
+```powershell
+k6 run Basico.js
+```
+
 > [!NOTE]
 > **Sobre los tiempos usados en esta práctica:** por motivos de tiempo de clase, las duraciones de las pruebas en los scripts siguientes se configuraron en **segundos** en lugar de minutos u horas. Esto permite completar la demostración en pocos minutos. **En un entorno real de pruebas, lo recomendable es usar duraciones mucho mayores** (minutos para Load/Stress/Spike, y horas para Soak), ya que se necesita tiempo suficiente para que el sistema estabilice su comportamiento bajo cada nivel de carga antes de sacar conclusiones.
 
