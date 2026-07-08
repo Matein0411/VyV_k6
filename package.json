@@ -1,0 +1,12 @@
+{
+  "name": "mock-api-k6",
+  "version": "1.0.0",
+  "description": "API mock simple para practicar pruebas de estres con k6",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
